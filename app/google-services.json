@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "424572687989",
+    "project_id": "jerawatchlist",
+    "storage_bucket": "jerawatchlist.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424572687989:android:234cdd2e148c0d6f730a3c",
+        "android_client_info": {
+          "package_name": "com.woigt.jerawatchlist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424572687989-iggc9bdbdeaoecoqq3jqapf2rqadklk0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVJ7fXDEJX8GvR0ZCPoq-GKgodhFoH5Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424572687989-iggc9bdbdeaoecoqq3jqapf2rqadklk0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
