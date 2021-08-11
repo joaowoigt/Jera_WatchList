@@ -1,16 +1,13 @@
-package com.woigt.jerawatchlist
+package com.woigt.jerawatchlist.activities.register
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.woigt.jerawatchlist.databinding.ActivitySignUpBinding
-import java.util.*
 import kotlin.collections.HashMap
 
 class SignUpActivity : AppCompatActivity() {

@@ -1,6 +1,5 @@
-package com.woigt.jerawatchlist
+package com.woigt.jerawatchlist.activities.register
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -10,7 +9,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.*
-import com.facebook.appevents.AppEventsLogger
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +17,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.woigt.jerawatchlist.activities.MainActivity
 import com.woigt.jerawatchlist.databinding.ActivityLoginBinding
 
 
@@ -37,6 +36,48 @@ class LoginActivity : AppCompatActivity() {
         FacebookSdk.sdkInitialize(applicationContext)
         callbackManager =  CallbackManager.Factory.create()
         auth = Firebase.auth
+
+
+        insertListeners()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val usuarioAtual: FirebaseUser? = auth.currentUser
+
+
+        if (usuarioAtual != null) {
+            telaPrincipal()
+        }
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    private fun insertListeners() {
+        binding.btCadastar.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        binding.btEntrar.setOnClickListener {
+            val email = binding.edtLoginEmail.text.toString()
+            val senha =  binding.edtLoginSenha.text.toString()
+
+            if(email.isEmpty() || senha.isEmpty()) {
+                Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_LONG)
+                    .show()
+            }else {
+                autenticarUsuario()
+            }
+        }
 
         val loginButton = binding.loginFacebook
         loginButton.setReadPermissions("public_profile", "email")
@@ -59,8 +100,9 @@ class LoginActivity : AppCompatActivity() {
             }
 
         })
-        insertListeners()
+
     }
+
 
     private fun handleFacebookAccessToken(token: AccessToken) {
         Log.d("infos", "handleFacebookAccessToken:$token")
@@ -101,38 +143,9 @@ class LoginActivity : AppCompatActivity() {
         }.addOnFailureListener {
             Log.d("db_error", "Erro ao salvar os dados")
 
-    }
-
-
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        callbackManager.onActivityResult(requestCode, resultCode, data)
-    }
-
-
-    private fun insertListeners() {
-        binding.btCadastar.setOnClickListener {
-            val intent = Intent(this, SignUpActivity::class.java)
-            startActivity(intent)
         }
-
-
-        binding.btEntrar.setOnClickListener {
-            val email = binding.edtLoginEmail.text.toString()
-            val senha =  binding.edtLoginSenha.text.toString()
-
-            if(email.isEmpty() || senha.isEmpty()) {
-                Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_LONG)
-                    .show()
-            }else {
-                autenticarUsuario()
-            }
-        }
-
     }
+
 
     private fun autenticarUsuario() {
         val email = binding.edtLoginEmail.text.toString()
@@ -159,16 +172,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val usuarioAtual: FirebaseUser? = auth.currentUser
-
-
-        if (usuarioAtual != null) {
-            telaPrincipal()
-        }
-    }
 
     private fun telaPrincipal() {
             val intent = Intent(this, MainActivity::class.java)
