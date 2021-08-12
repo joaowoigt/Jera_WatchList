@@ -1,6 +1,5 @@
 package com.woigt.jerawatchlist.activities.movies
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -14,6 +13,7 @@ import com.woigt.jerawatchlist.R
 import com.woigt.jerawatchlist.api.MoviesRepository
 import com.woigt.jerawatchlist.model.Movie
 import kotlinx.android.synthetic.main.activity_movie.*
+import java.net.URLEncoder
 
 class MovieActivity : AppCompatActivity() {
 
@@ -28,7 +28,12 @@ class MovieActivity : AppCompatActivity() {
     private lateinit var popularPopularMoviesAdapter: PopularMoviesAdapter
     private lateinit var popularMoviesLayoutManager: LinearLayoutManager
 
+    private lateinit var searchMovies: RecyclerView
+    private lateinit var searchMoviesAdapter: PopularMoviesAdapter
+    private lateinit var searchMoviesLayoutManager: LinearLayoutManager
+
     private var popularMoviesPage = 1
+    private var searchMoviesPage = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,33 +50,39 @@ class MovieActivity : AppCompatActivity() {
 
 
         getPopularMovies()
+
+
         setPopularMoviesRecyclerView()
         setWatchListRecyclerView()
         setWatchedListRecyclerView()
+        setSearchMoviesRecyclerView()
+
         insertListeners()
+
+
     }
 
+    private fun insertListeners() {
+        bt_search.setOnClickListener {
+            val termo = edt_search.text.toString()
+            val termoEncoded = URLEncoder.encode(termo,"utf-8")
 
+            searchMovies(termoEncoded)
+        }
+    }
 
 
     override fun onStart() {
         super.onStart()
         watchListAdapter!!.startListening()
         watchedListAdapter!!.startListening()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         watchListAdapter!!.stopListening()
         watchedListAdapter!!.stopListening()
-    }
-
-    private fun insertListeners() {
-        bt_searchpage.setOnClickListener {
-            val intent = Intent(this, SearchMovieActivity::class.java)
-            intent.putExtra("perfilName", perfilName)
-            startActivity(intent)
-        }
     }
 
     private fun setWatchListRecyclerView() {
@@ -101,6 +112,19 @@ class MovieActivity : AppCompatActivity() {
         popularMovies.adapter = popularPopularMoviesAdapter
     }
 
+    private fun setSearchMoviesRecyclerView() {
+        searchMovies = findViewById(R.id.rv_search)
+        searchMoviesLayoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
+        searchMovies.layoutManager = searchMoviesLayoutManager
+
+        searchMoviesAdapter = PopularMoviesAdapter(mutableListOf()) { movie -> addWatchList(movie) }
+        searchMovies.adapter = searchMoviesAdapter
+    }
+
+
     private fun setWatchedListRecyclerView() {
         val query = documentReference.collection("watchedlist")
 
@@ -125,15 +149,42 @@ class MovieActivity : AppCompatActivity() {
         )
     }
 
+    private fun searchMovies(termo: String = "") {
+        MoviesRepository.searchMovies(
+            searchMoviesPage,
+            termo,
+            ::onSearchMoviesFetched,
+            ::onError
+        )
+
+    }
+
+    private fun attachSearchMoviesOnScrollListener() {
+        searchMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = searchMoviesLayoutManager.itemCount
+                val visibleItemCount = searchMoviesLayoutManager.childCount
+                val firstVisibleItem = searchMoviesLayoutManager.findFirstVisibleItemPosition()
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2){
+                    searchMovies.removeOnScrollListener(this)
+                    searchMoviesPage++
+                    searchMovies()
+                }
+            }
+        })
+    }
+
+    private fun onSearchMoviesFetched(movies: List<Movie>) {
+        searchMoviesAdapter.appendMovies(movies)
+        attachSearchMoviesOnScrollListener()
+    }
+
     private fun onPopularMoviesFetched(movies: List<Movie>) {
         popularPopularMoviesAdapter.appendMovies(movies)
         attachPopularMoviesOnScrollListener()
     }
 
-    private fun onError() {
-        Toast.makeText(this, "Please Check your internet connection",
-            Toast.LENGTH_LONG).show()
-    }
 
     private fun attachPopularMoviesOnScrollListener() {
         popularMovies.addOnScrollListener(object: RecyclerView.OnScrollListener() {
@@ -149,6 +200,12 @@ class MovieActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+
+    private fun onError() {
+        Toast.makeText(this, "Please Check your internet connection",
+            Toast.LENGTH_LONG).show()
     }
 
     private fun addWatchList(movie: Movie) {

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.movies.MovieActivity">
@@ -62,11 +67,44 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/bt_searchpage"
+        android:id="@+id/bt_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pesquisar mais!"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_popular_movies" />
+        app:layout_constraintTop_toTopOf="@id/input_search"
+        app:layout_constraintBottom_toBottomOf="@id/input_search"
+        app:layout_constraintStart_toEndOf="@id/input_search"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_search"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Pesquisar termo"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/rv_watched"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/bt_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/input_search"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+

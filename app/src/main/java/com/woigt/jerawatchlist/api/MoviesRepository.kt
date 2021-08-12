@@ -1,6 +1,5 @@
 package com.woigt.jerawatchlist.api
 
-import android.util.Log
 import com.woigt.jerawatchlist.model.Movie
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,6 +39,35 @@ object MoviesRepository {
                            onError.invoke()
                         }
 
+                    }
+                }
+
+                override fun onFailure(call: Call<GetMoviesResponse>, t: Throwable) {
+                    onError.invoke()
+                }
+            })
+
+    }
+
+    fun searchMovies (
+        page: Int = 1,
+        search: String? = null,
+        onSuccess: (movies: List<Movie>) -> Unit,
+        onError: () -> Unit) {
+        api.searchMovies(page = page, search = search)
+            .enqueue(object : Callback<GetMoviesResponse> {
+                override fun onResponse(
+                    call: Call<GetMoviesResponse>,
+                    response: Response<GetMoviesResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+
+                        if (responseBody != null) {
+                            onSuccess.invoke(responseBody.movies)
+                        } else {
+                            onError.invoke()
+                        }
                     }
                 }
 
