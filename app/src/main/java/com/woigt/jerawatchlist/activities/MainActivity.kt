@@ -8,11 +8,12 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.woigt.jerawatchlist.activities.movies.MovieActivity
 import com.woigt.jerawatchlist.activities.perfil.PerfilAdapter
 import com.woigt.jerawatchlist.activities.register.LoginActivity
 import com.woigt.jerawatchlist.activities.register.NewPerfilActivity
 import com.woigt.jerawatchlist.databinding.ActivityMainBinding
-import com.woigt.jerawatchlist.model.PerfilFireBaseUi
+import com.woigt.jerawatchlist.model.Perfil
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -42,10 +43,14 @@ class MainActivity : AppCompatActivity() {
         val query: Query = FirebaseFirestore.getInstance()
             .collection("Usuarios").document(usuarioId).collection("perfis")
 
-        val options = FirestoreRecyclerOptions.Builder<PerfilFireBaseUi>()
-            .setQuery(query, PerfilFireBaseUi::class.java).build()
+        val options = FirestoreRecyclerOptions.Builder<Perfil>()
+            .setQuery(query, Perfil::class.java).build()
 
-        perfilAdapter = PerfilAdapter(options)
+        perfilAdapter = PerfilAdapter(options) {
+            val intent = Intent(this, MovieActivity::class.java)
+            intent.putExtra("perfilName", it.name)
+            startActivity(intent)
+        }
 
         rv_perfil.layoutManager = LinearLayoutManager(this)
         rv_perfil.adapter = perfilAdapter

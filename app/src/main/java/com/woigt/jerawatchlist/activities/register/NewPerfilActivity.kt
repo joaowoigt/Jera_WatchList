@@ -46,11 +46,13 @@ class NewPerfilActivity : AppCompatActivity() {
         val perfil = Perfil(name)
 
 
+
+
         usuarioID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
 
 
         val documentReference: DocumentReference = db.collection("Usuarios")
-            .document(usuarioID).collection("perfis").document()
+            .document(usuarioID).collection("perfis").document(perfil.name)
 
 
         documentReference.set(perfil).addOnSuccessListener {
@@ -58,6 +60,9 @@ class NewPerfilActivity : AppCompatActivity() {
         }.addOnFailureListener {
             Log.d("db_error", "Erro ao salvar os dados")
         }
+
+
+
     }
 
 

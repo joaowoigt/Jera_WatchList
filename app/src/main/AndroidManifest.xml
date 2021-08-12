@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JeraWatchList">
-        <activity android:name=".activities.register.NewPerfilActivity"></activity>
+        <activity android:name=".activities.movies.SearchMovieActivity"></activity>
+        <activity android:name=".activities.movies.MovieActivity" />
+        <activity android:name=".activities.register.NewPerfilActivity" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.register.SignUpActivity" />
         <activity android:name=".activities.register.LoginActivity">
