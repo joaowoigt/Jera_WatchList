@@ -3,6 +3,7 @@ package com.woigt.jerawatchlist.activities.movies
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,7 +30,7 @@ class WatchedAdapter(options: FirestoreRecyclerOptions<Movie>,
 
     inner class WatchedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val poster: ImageView = itemView.findViewById(R.id.iv_movie_poster)
-        private val action: ImageView = itemView.findViewById(R.id.iv_action)
+        private val action: ImageButton = itemView.findViewById(R.id.iv_action)
 
         fun bind(movie: Movie) {
             Glide.with(itemView)

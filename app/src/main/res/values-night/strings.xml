@@ -17,4 +17,5 @@
     <string name="keyword">Pesquisar termo</string>
     <string name="profile_name">Nome do Perfil</string>
     <string name="create">Criar</string>
+    <string name="delete_profile">Deletar Perfil</string>
 </resources>

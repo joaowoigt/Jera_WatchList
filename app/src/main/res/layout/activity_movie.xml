@@ -7,7 +7,6 @@
     android:layout_height="match_parent" >
 
 <androidx.constraintlayout.widget.ConstraintLayout
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.movies.MovieActivity">
@@ -20,6 +19,16 @@
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bt_delete_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_profile"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/bt_back"/>
 
     <TextView
         android:id="@+id/tv_popular_movies"
@@ -95,6 +104,15 @@
         app:layout_constraintTop_toBottomOf="@id/rv_watched"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageButton
+        android:id="@+id/bt_refresh_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_refresh_24"
+        android:backgroundTint="@color/purple_500"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tv_discover" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_discover"
         android:layout_width="match_parent"
@@ -112,8 +130,6 @@
         app:layout_constraintTop_toBottomOf="@id/rv_discover"
         app:layout_constraintEnd_toStartOf="@id/bt_search"
         app:layout_constraintStart_toStartOf="parent">
-
-
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_search"

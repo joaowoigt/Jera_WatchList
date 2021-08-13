@@ -27,15 +27,15 @@ class MovieActivity : AppCompatActivity() {
     private var watchedListAdapter: WatchedAdapter? = null
 
     private lateinit var popularMovies: RecyclerView
-    private lateinit var popularPopularMoviesAdapter: PopularMoviesAdapter
+    private lateinit var popularMoviesAdapter: ApiAdapter
     private lateinit var popularMoviesLayoutManager: LinearLayoutManager
 
     private lateinit var searchMovies: RecyclerView
-    private lateinit var searchMoviesAdapter: PopularMoviesAdapter
+    private lateinit var searchMoviesAdapter: ApiAdapter
     private lateinit var searchMoviesLayoutManager: LinearLayoutManager
 
     private lateinit var discoverMovies: RecyclerView
-    private lateinit var discoverMoviesAdapter: PopularMoviesAdapter
+    private lateinit var discoverMoviesAdapter: ApiAdapter
     private lateinit var discoverMoviesLayoutManager: LinearLayoutManager
 
     private var popularMoviesPage = 1
@@ -56,7 +56,8 @@ class MovieActivity : AppCompatActivity() {
 
 
         getPopularMovies()
-        getGenreID()
+        getDiscoverByGenre("watchlist")
+        getDiscoverByGenre("watchedlist")
 
         setPopularMoviesRecyclerView()
         setWatchListRecyclerView()
@@ -80,8 +81,16 @@ class MovieActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-    }
+        bt_refresh_discover.setOnClickListener {
+            getDiscoverByGenre("watchlist")
+            getDiscoverByGenre("watchedlist")
+        }
 
+        bt_delete_profile.setOnClickListener {
+            finish()
+            documentReference.delete()
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -118,8 +127,8 @@ class MovieActivity : AppCompatActivity() {
             false)
         popularMovies.layoutManager = popularMoviesLayoutManager
 
-        popularPopularMoviesAdapter = PopularMoviesAdapter(mutableListOf()){movie -> addWatchList(movie)}
-        popularMovies.adapter = popularPopularMoviesAdapter
+        popularMoviesAdapter = ApiAdapter(mutableListOf()){ movie -> addWatchList(movie)}
+        popularMovies.adapter = popularMoviesAdapter
     }
 
     private fun setSearchMoviesRecyclerView() {
@@ -130,7 +139,7 @@ class MovieActivity : AppCompatActivity() {
             false)
         searchMovies.layoutManager = searchMoviesLayoutManager
 
-        searchMoviesAdapter = PopularMoviesAdapter(mutableListOf()) {movie -> addWatchList(movie)}
+        searchMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
         searchMovies.adapter = searchMoviesAdapter
     }
 
@@ -142,7 +151,7 @@ class MovieActivity : AppCompatActivity() {
             false)
         discoverMovies.layoutManager = discoverMoviesLayoutManager
 
-        discoverMoviesAdapter = PopularMoviesAdapter(mutableListOf()) {movie -> addWatchList(movie)}
+        discoverMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
         discoverMovies.adapter = discoverMoviesAdapter
     }
 
@@ -198,7 +207,8 @@ class MovieActivity : AppCompatActivity() {
                 if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
                     discoverMovies.removeOnScrollListener(this)
                     discoverMoviePage++
-                   getGenreID()
+                    getDiscoverByGenre("watchlist")
+                    getDiscoverByGenre("watchedlist")
                 }
             }
         })
@@ -248,7 +258,7 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun onPopularMoviesFetched(movies: List<Movie>) {
-        popularPopularMoviesAdapter.appendMovies(movies)
+        popularMoviesAdapter.appendMovies(movies)
         attachPopularMoviesOnScrollListener()
     }
 
@@ -280,14 +290,17 @@ class MovieActivity : AppCompatActivity() {
 
     }
 
-    private fun getGenreID() {
-       documentReference.collection("watchlist")
-           .get().addOnSuccessListener {
-               val allmovies = it.toObjects(Movie::class.java).flatMap { movie ->
-                   movie.genre_ids }.toSet().joinToString(",")
-               getDiscoverMovies(allmovies)
+    private fun getDiscoverByGenre(path: String) {
+       documentReference.collection(path)
+           .get().addOnSuccessListener { QuerySnapshot ->
+               val allmovies = QuerySnapshot.toObjects(Movie::class.java).flatMap { movie ->
+                   movie.genre_ids }.groupingBy { it
+               }.eachCount()
+
+               allmovies.maxByOrNull{ it.value
+               }?.let {
+                   getDiscoverMovies("${it.key}")
+               }
            }
-
-
     }
 }

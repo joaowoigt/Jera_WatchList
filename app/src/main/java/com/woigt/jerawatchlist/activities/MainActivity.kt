@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -14,6 +15,7 @@ import com.woigt.jerawatchlist.activities.perfil.PerfilAdapter
 import com.woigt.jerawatchlist.activities.register.LoginActivity
 import com.woigt.jerawatchlist.activities.register.NewProfileActivity
 import com.woigt.jerawatchlist.databinding.ActivityMainBinding
+import com.woigt.jerawatchlist.model.Movie
 import com.woigt.jerawatchlist.model.Profile
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,8 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var userID: String
 
-    var profileAdapter: PerfilAdapter? = null
-
+    private var profileAdapter: PerfilAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +57,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+
         rv_profile.layoutManager = LinearLayoutManager(this)
         rv_profile.adapter = profileAdapter
-
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -82,20 +83,33 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-
         binding.btProfileRegister.setOnClickListener {
-            val intent = Intent(this, NewProfileActivity::class.java)
-            startActivity(intent)
+            db.collection("Usuarios").document(userID).collection("perfis")
+                .get().addOnSuccessListener {
+                    val profilesList = it.toObjects(Profile::class.java).toList()
+                    if (profilesList.size < 4) {
+                        val intent = Intent(this, NewProfileActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        binding.btProfileRegister.setOnClickListener {
+                            Toast.makeText(
+                                this, "Numero maximo de perfis atingdo",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
         }
     }
+
+
 
     private fun bindUserData() {
         val email = FirebaseAuth.getInstance().currentUser?.email
         userID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
 
-
         val documentReference = db.collection("Usuarios").document(userID)
-        documentReference.addSnapshotListener { documentSnapshot, error ->
+        documentReference.addSnapshotListener { documentSnapshot, _ ->
             if (documentSnapshot != null) {
                 binding.tvUsername.text = documentSnapshot.getString("nome")
                 binding.tvEmail.text = email
@@ -103,5 +117,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
+
+
