@@ -27,7 +27,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var callbackManager : CallbackManager
     private lateinit var auth: FirebaseAuth
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -37,28 +36,21 @@ class LoginActivity : AppCompatActivity() {
         callbackManager =  CallbackManager.Factory.create()
         auth = Firebase.auth
 
-
         insertListeners()
     }
 
     override fun onStart() {
         super.onStart()
-
         val usuarioAtual: FirebaseUser? = auth.currentUser
-
-
         if (usuarioAtual != null) {
-            telaPrincipal()
+            toMainActivity()
         }
     }
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
-
 
     private fun insertListeners() {
         binding.btCadastar.setOnClickListener {
@@ -66,8 +58,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-        binding.btEntrar.setOnClickListener {
+        binding.btLogin.setOnClickListener {
             val email = binding.edtLoginEmail.text.toString()
             val senha =  binding.edtLoginSenha.text.toString()
 
@@ -75,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_LONG)
                     .show()
             }else {
-                autenticarUsuario()
+                authenticateUser()
             }
         }
 
@@ -98,11 +89,9 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, error?.message, Toast.LENGTH_LONG)
                     .show()
             }
-
         })
 
     }
-
 
     private fun handleFacebookAccessToken(token: AccessToken) {
         Log.d("infos", "handleFacebookAccessToken:$token")
@@ -115,20 +104,19 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("infos", "signInWithCredential:success")
                     val user = auth.currentUser
                     if (user != null) {
-                        salvarDadosDoUsuario(user)
-                        telaPrincipal()
+                        saveUserData(user)
+                        toMainActivity()
                     }
 
                 } else {
                     Log.w("infos", "signInWithCredential:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()
-
                 }
             }
     }
 
-    private fun salvarDadosDoUsuario(user: FirebaseUser) {
+    private fun saveUserData(user: FirebaseUser) {
         val db = FirebaseFirestore.getInstance()
 
         val usuarios: HashMap<String, String> = HashMap()
@@ -146,21 +134,17 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun autenticarUsuario() {
+    private fun authenticateUser() {
         val email = binding.edtLoginEmail.text.toString()
-        val senha =  binding.edtLoginSenha.text.toString()
+        val password =  binding.edtLoginSenha.text.toString()
 
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, senha)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
-
                 if (it.isSuccessful) {
                     binding.loginProgressbar.visibility = View.VISIBLE
-
-                    Handler().postDelayed({ telaPrincipal() }, 3000 )
+                    Handler().postDelayed({ toMainActivity() }, 3000 )
                 } else {
                     val erro: String
-
                     try {
                         throw it.exception!!
                     } catch (e: Exception) {
@@ -172,11 +156,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun telaPrincipal() {
+    private fun toMainActivity() {
             val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
-
 }

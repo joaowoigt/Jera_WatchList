@@ -12,15 +12,24 @@
     android:layout_height="match_parent"
     tools:context=".activities.movies.MovieActivity">
 
+    <Button
+        android:id="@+id/bt_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_popular_movies"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text= "Filmes Populares"
+        android:text= "@string/popular_movies"
         android:textSize="24sp"
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/bt_back" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_popular_movies"
@@ -34,7 +43,7 @@
         android:id="@+id/tv_watchlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Para Assistir"
+        android:text="@string/watchlist"
         android:textSize="24sp"
         android:layout_margin="16dp"
         app:layout_constraintTop_toBottomOf="@id/rv_popular_movies"
@@ -52,7 +61,7 @@
         android:id="@+id/tv_watched"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Assistido"
+        android:text="@string/watched"
         android:textSize="24sp"
         android:layout_margin="16dp"
         app:layout_constraintTop_toBottomOf="@id/rv_watchlist"
@@ -63,28 +72,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_watched"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_watched" />
 
     <Button
         android:id="@+id/bt_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pesquisar mais!"
+        android:text="@string/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/input_search"
         app:layout_constraintBottom_toBottomOf="@id/input_search"
         app:layout_constraintStart_toEndOf="@id/input_search"/>
 
+    <TextView
+        android:id="@+id/tv_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/discover"
+        android:textSize="24sp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/rv_watched"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_discover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_discover"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Pesquisar termo"
+        android:hint="@string/keyword"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:layout_constraintTop_toBottomOf="@id/rv_watched"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/bt_search">
+        app:layout_constraintTop_toBottomOf="@id/rv_discover"
+        app:layout_constraintEnd_toStartOf="@id/bt_search"
+        app:layout_constraintStart_toStartOf="parent">
+
+
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_search"
@@ -100,9 +129,6 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/input_search"
         app:layout_constraintStart_toStartOf="parent" />
-
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

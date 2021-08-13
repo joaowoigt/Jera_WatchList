@@ -9,12 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.woigt.jerawatchlist.R
-import com.woigt.jerawatchlist.model.Perfil
+import com.woigt.jerawatchlist.model.Profile
 
-class PerfilAdapter(options: FirestoreRecyclerOptions<Perfil>,
-                    val onItemClicked: (Perfil) -> Unit) :
-    FirestoreRecyclerAdapter<Perfil, PerfilAdapter.PerfilHolder>(options) {
-
+class PerfilAdapter(options: FirestoreRecyclerOptions<Profile>,
+                    val onItemClicked: (Profile) -> Unit) :
+    FirestoreRecyclerAdapter<Profile, PerfilAdapter.PerfilHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PerfilHolder {
         val view = LayoutInflater.from(parent.context)
@@ -23,26 +22,15 @@ class PerfilAdapter(options: FirestoreRecyclerOptions<Perfil>,
         return PerfilHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PerfilHolder, position: Int, model: Perfil) {
+    override fun onBindViewHolder(holder: PerfilHolder, position: Int, model: Profile) {
         holder.login.setOnClickListener {
             onItemClicked(model)
         }
         holder.name.text = model.name
-
     }
-
 
     class PerfilHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var name = itemView.findViewById<TextView>(R.id.tv_perfil_name)
-        var login = itemView.findViewById<ImageView>(R.id.iv_perfil_login)
-
-
+        var name: TextView = itemView.findViewById(R.id.tv_profile_name)
+        var login: ImageView = itemView.findViewById(R.id.iv_profile_login)
     }
-
-
-
 }
-
-
-
-

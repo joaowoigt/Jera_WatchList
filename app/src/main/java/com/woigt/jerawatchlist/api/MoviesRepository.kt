@@ -38,10 +38,8 @@ object MoviesRepository {
                         } else {
                            onError.invoke()
                         }
-
                     }
                 }
-
                 override fun onFailure(call: Call<GetMoviesResponse>, t: Throwable) {
                     onError.invoke()
                 }
@@ -70,7 +68,34 @@ object MoviesRepository {
                         }
                     }
                 }
+                override fun onFailure(call: Call<GetMoviesResponse>, t: Throwable) {
+                    onError.invoke()
+                }
+            })
 
+    }
+
+    fun discoverMovie(
+        with_genres: String? = null,
+        page: Int = 1,
+        onSuccess: (movies: List<Movie>) -> Unit,
+        onError: () -> Unit) {
+        api.discoverMovie(with_genres = with_genres, page = page)
+            .enqueue(object : Callback<GetMoviesResponse> {
+                override fun onResponse(
+                    call: Call<GetMoviesResponse>,
+                    response: Response<GetMoviesResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+
+                        if (responseBody != null) {
+                            onSuccess.invoke(responseBody.movies)
+                        } else {
+                            onError.invoke()
+                        }
+                    }
+                }
                 override fun onFailure(call: Call<GetMoviesResponse>, t: Throwable) {
                     onError.invoke()
                 }

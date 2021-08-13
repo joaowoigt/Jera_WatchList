@@ -15,7 +15,6 @@ class PopularMoviesAdapter(
     private val onMovieClick: (movie: Movie) -> Unit
 ) : RecyclerView.Adapter<PopularMoviesAdapter.MovieViewHolder>() {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
        val view = LayoutInflater
            .from(parent.context)
@@ -37,8 +36,6 @@ class PopularMoviesAdapter(
             movies.size - 1
         )
     }
-
-
 
     inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

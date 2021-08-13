@@ -13,7 +13,7 @@
         android:theme="@style/Theme.JeraWatchList">
         <activity android:name=".activities.movies.SearchMovieActivity"></activity>
         <activity android:name=".activities.movies.MovieActivity" />
-        <activity android:name=".activities.register.NewPerfilActivity" />
+        <activity android:name=".activities.register.NewProfileActivity" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.register.SignUpActivity" />
         <activity android:name=".activities.register.LoginActivity">

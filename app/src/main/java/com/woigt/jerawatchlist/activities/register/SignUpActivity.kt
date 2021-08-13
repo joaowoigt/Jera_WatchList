@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.woigt.jerawatchlist.databinding.ActivitySignUpBinding
+import com.woigt.jerawatchlist.utils.format
+import com.woigt.jerawatchlist.utils.text
+import java.util.*
 import kotlin.collections.HashMap
 
 class SignUpActivity : AppCompatActivity() {
@@ -26,25 +30,35 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun insertListeners() {
-        binding.btCadastrarSignup.setOnClickListener {
+        binding.btRegisterSignup.setOnClickListener {
             val usuario = binding.inputEditUser.text.toString()
-            val senha = binding.inputEditSenha.text.toString()
+            val senha = binding.inputEditPassword.text.toString()
             val email = binding.inputEditEmail.text.toString()
-            val data = binding.inputEditNascimento.text.toString()
+            val data = binding.inputEditBirthdate.text.toString()
 
             if (usuario.isEmpty() || senha.isEmpty() || email.isEmpty() || data.isEmpty()) {
                 Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_LONG)
                     .show()
-            }else {
+            } else {
                 cadastraUsuario()
                 finish()
 
             }
         }
+        binding.inputBirthdate.editText?.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker().build()
+
+            datePicker.addOnPositiveButtonClickListener {
+                val timeZone = TimeZone.getDefault()
+                val offset = timeZone.getOffset(Date().time) * -1
+                binding.inputBirthdate.text = Date(it + offset).format()
+            }
+            datePicker.show(supportFragmentManager, DATE_PICKER_TAG)
+        }
     }
 
     private fun cadastraUsuario() {
-        val senha = binding.inputEditSenha.text.toString()
+        val senha = binding.inputEditPassword.text.toString()
         val email = binding.inputEditEmail.text.toString()
 
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha)
@@ -80,7 +94,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun salvarDadosUsuario() {
         val nome = binding.inputEditUser.text.toString()
-        val dataNascimento = binding.inputEditNascimento.text.toString()
+        val dataNascimento = binding.inputEditBirthdate.text.toString()
 
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -99,5 +113,9 @@ class SignUpActivity : AppCompatActivity() {
         }.addOnFailureListener {
             Log.d("db_error", "Erro ao salvar os dados")
         }
+    }
+
+    companion object {
+        const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
     }
 }

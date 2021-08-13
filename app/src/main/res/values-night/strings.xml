@@ -1,13 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Jera WatchList</string>
-    <string name="facebook_app_id">1632819363589391</string>
-    <string name="fb_login_protocol_scheme">fb1632819363589391</string>
     <string name="user">Usuario</string>
     <string name="email">Email</string>
     <string name="password">Senha</string>
     <string name="birthdate">Data de Nascimento</string>
     <string name="signup">Cadastrar</string>
-    <string name="login">Entrar</string>
+    <string name="enter">Entrar</string>
     <string name="logout">Deslogar</string>
     <string name="new_profile">criar novo perfil</string>
     <string name="back">Voltar</string>

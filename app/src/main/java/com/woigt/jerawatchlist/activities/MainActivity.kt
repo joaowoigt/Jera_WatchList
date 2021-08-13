@@ -3,6 +3,7 @@ package com.woigt.jerawatchlist.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -11,19 +12,18 @@ import com.google.firebase.firestore.Query
 import com.woigt.jerawatchlist.activities.movies.MovieActivity
 import com.woigt.jerawatchlist.activities.perfil.PerfilAdapter
 import com.woigt.jerawatchlist.activities.register.LoginActivity
-import com.woigt.jerawatchlist.activities.register.NewPerfilActivity
+import com.woigt.jerawatchlist.activities.register.NewProfileActivity
 import com.woigt.jerawatchlist.databinding.ActivityMainBinding
-import com.woigt.jerawatchlist.model.Perfil
+import com.woigt.jerawatchlist.model.Profile
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private lateinit var usuarioId: String
+    private lateinit var userID: String
 
-    var perfilAdapter: PerfilAdapter? = null
+    var profileAdapter: PerfilAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        usuarioId = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+        userID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+
+        if (rv_profile.layoutManager?.itemCount == 4) {
+            binding.btProfileRegister.visibility = View.GONE
+        }
 
         setUpRecyclerView()
         insertListeners()
@@ -41,19 +45,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpRecyclerView() {
         val query: Query = FirebaseFirestore.getInstance()
-            .collection("Usuarios").document(usuarioId).collection("perfis")
+            .collection("Usuarios").document(userID).collection("perfis")
 
-        val options = FirestoreRecyclerOptions.Builder<Perfil>()
-            .setQuery(query, Perfil::class.java).build()
+        val options = FirestoreRecyclerOptions.Builder<Profile>()
+            .setQuery(query, Profile::class.java).build()
 
-        perfilAdapter = PerfilAdapter(options) {
+        profileAdapter = PerfilAdapter(options) {
             val intent = Intent(this, MovieActivity::class.java)
             intent.putExtra("perfilName", it.name)
             startActivity(intent)
         }
 
-        rv_perfil.layoutManager = LinearLayoutManager(this)
-        rv_perfil.adapter = perfilAdapter
+        rv_profile.layoutManager = LinearLayoutManager(this)
+        rv_profile.adapter = profileAdapter
 
     }
 
@@ -62,34 +66,35 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         bindUserData()
 
-        perfilAdapter!!.startListening()
+        profileAdapter!!.startListening()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        perfilAdapter!!.stopListening()
+        profileAdapter!!.stopListening()
     }
 
     private fun insertListeners() {
-        binding.btDeslogar.setOnClickListener {
+        binding.btLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        binding.btPefilRegister.setOnClickListener {
-            val intent = Intent(this, NewPerfilActivity::class.java)
+
+        binding.btProfileRegister.setOnClickListener {
+            val intent = Intent(this, NewProfileActivity::class.java)
             startActivity(intent)
         }
     }
 
     private fun bindUserData() {
         val email = FirebaseAuth.getInstance().currentUser?.email
-        usuarioId = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+        userID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
 
 
-        val documentReference = db.collection("Usuarios").document(usuarioId)
+        val documentReference = db.collection("Usuarios").document(userID)
         documentReference.addSnapshotListener { documentSnapshot, error ->
             if (documentSnapshot != null) {
                 binding.tvUsername.text = documentSnapshot.getString("nome")

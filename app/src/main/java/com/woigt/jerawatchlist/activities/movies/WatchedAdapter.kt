@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -16,7 +15,6 @@ import com.woigt.jerawatchlist.model.Movie
 class WatchedAdapter(options: FirestoreRecyclerOptions<Movie>,
                        val onItemClicked: (Movie) -> Unit) :
     FirestoreRecyclerAdapter<Movie, WatchedAdapter.WatchedViewHolder>(options){
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WatchedViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -42,9 +40,7 @@ class WatchedAdapter(options: FirestoreRecyclerOptions<Movie>,
             action.setImageResource(R.drawable.ic_baseline_delete_24)
 
             action.setOnClickListener { onItemClicked(movie)}
-
-
-
+            movie.genre_ids
 
         }
 

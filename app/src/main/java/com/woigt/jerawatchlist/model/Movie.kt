@@ -8,8 +8,8 @@ import kotlinx.android.parcel.Parcelize
 data class Movie(
     @SerializedName("title") val title: String,
     @SerializedName("poster_path") val posterPath: String,
-    val isWatched: Boolean = false
-){
-    constructor() : this("", "")
-}
+    @SerializedName("genre_ids") val genre_ids: List<Int>,
 
+){
+    constructor() : this("", "", emptyList<Int>())
+}
