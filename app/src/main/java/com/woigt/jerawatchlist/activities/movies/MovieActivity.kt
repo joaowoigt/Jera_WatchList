@@ -10,6 +10,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.woigt.jerawatchlist.viewmodels.MovieViewModel
 import com.woigt.jerawatchlist.R
 import com.woigt.jerawatchlist.activities.MainActivity
 import com.woigt.jerawatchlist.api.MoviesRepository
@@ -24,6 +25,7 @@ class MovieActivity : AppCompatActivity() {
     private lateinit var userId: String
     private lateinit var profileName: String
     private lateinit var documentReference: DocumentReference
+    private val movieViewModel : MovieViewModel = MovieViewModel()
 
     private var watchListAdapter: WatchListAdapter? = null
     private var watchedListAdapter: WatchedAdapter? = null
@@ -126,7 +128,8 @@ class MovieActivity : AppCompatActivity() {
             false)
         popularMovies.layoutManager = popularMoviesLayoutManager
 
-        popularMoviesAdapter = ApiAdapter(mutableListOf()){ movie -> addWatchList(movie)}
+        popularMoviesAdapter = ApiAdapter(mutableListOf()){ movie -> movieViewModel
+            .addWatchList(documentReference, movie)}
         popularMovies.adapter = popularMoviesAdapter
     }
 
@@ -136,7 +139,8 @@ class MovieActivity : AppCompatActivity() {
         val options = FirestoreRecyclerOptions.Builder<Movie>()
             .setQuery(query, Movie::class.java).build()
 
-        watchListAdapter =  WatchListAdapter(options) {movie -> removeAndAddToWatchedList(movie)  }
+        watchListAdapter =  WatchListAdapter(options) {movie -> movieViewModel
+            .removeAndAddToWatchedList(documentReference, movie)  }
 
         rv_watchlist.layoutManager = LinearLayoutManager(
             this,
@@ -151,7 +155,8 @@ class MovieActivity : AppCompatActivity() {
         val options = FirestoreRecyclerOptions.Builder<Movie>()
             .setQuery(query, Movie::class.java).build()
 
-        watchedListAdapter = WatchedAdapter(options) {movie -> deleteMovie(movie)}
+        watchedListAdapter = WatchedAdapter(options) {movie -> movieViewModel
+            .deleteMovie(documentReference, movie)}
 
         rv_watched.layoutManager = LinearLayoutManager(
             this,
@@ -168,7 +173,8 @@ class MovieActivity : AppCompatActivity() {
             false)
         discoverMovies.layoutManager = discoverMoviesLayoutManager
 
-        discoverMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
+        discoverMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> movieViewModel
+            .addWatchList(documentReference, movie)}
         discoverMovies.adapter = discoverMoviesAdapter
     }
 
@@ -180,7 +186,8 @@ class MovieActivity : AppCompatActivity() {
             false)
         searchMovies.layoutManager = searchMoviesLayoutManager
 
-        searchMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
+        searchMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> movieViewModel
+            .addWatchList(documentReference, movie)}
         searchMovies.adapter = searchMoviesAdapter
     }
 
@@ -288,38 +295,6 @@ class MovieActivity : AppCompatActivity() {
     private fun onError() {
         Toast.makeText(this, "Please Check your internet connection",
             Toast.LENGTH_LONG).show()
-    }
-
-    /**
-     * Add the clicked movie to the Watchlist on the FireStore
-     */
-    private fun addWatchList(movie: Movie) {
-            documentReference.collection("watchlist")
-                .document(movie.title + "WatchList")
-                .set(movie)
-
-    }
-
-    /**
-     * Remove the clicked movie from the Watchlist and add to the WatchedList on the Firestore
-     */
-    private fun removeAndAddToWatchedList(movie: Movie) {
-        documentReference.collection("watchlist")
-            .document(movie.title + "WatchList").delete()
-
-        documentReference.collection("watchedlist")
-            .document(movie.title + "WatchedList")
-            .set(movie)
-    }
-
-    /**
-     * Delete the clicked movie from the WatcheList
-     */
-    private fun deleteMovie(movie: Movie) {
-        documentReference.collection("watchedlist")
-            .document(movie.title + "WatchedList")
-            .delete()
-
     }
 
     /**

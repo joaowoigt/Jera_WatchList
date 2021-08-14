@@ -2,17 +2,14 @@ package com.woigt.jerawatchlist.activities.register
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.*
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.woigt.jerawatchlist.viewmodels.RegisterViewModel
 import com.woigt.jerawatchlist.databinding.ActivitySignUpBinding
 import com.woigt.jerawatchlist.utils.format
 import com.woigt.jerawatchlist.utils.text
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Activity to register a new user on the Firestore Database and FireStore Authentication.
@@ -21,13 +18,14 @@ import kotlin.collections.HashMap
 class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
-
-    private lateinit var usuarioID: String
+    private lateinit var userID: String
+    private val registerViewModel: RegisterViewModel = RegisterViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         insertListeners()
     }
@@ -76,7 +74,7 @@ class SignUpActivity : AppCompatActivity() {
             .addOnCompleteListener {
 
                 if (it.isSuccessful) {
-                    salvarDadosUsuario()
+                    saveUserData()
                     Toast.makeText(this, "Cadastrado com sucesso", Toast.LENGTH_LONG)
                         .show()
                 } else {
@@ -99,28 +97,12 @@ class SignUpActivity : AppCompatActivity() {
     /**
      * Function to save the user data on the Firestore Database
      */
-    private fun salvarDadosUsuario() {
+    private fun saveUserData() {
         val nome = binding.inputEditUser.text.toString()
-        val dataNascimento = binding.inputEditBirthdate.text.toString()
-
-        val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-        val usuarios: HashMap<String, String> = HashMap()
-        usuarios["nome"] = nome
-        usuarios["dataNascimento"] = dataNascimento
-
-        usuarioID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
-
-        val documentReference: DocumentReference = db.collection("Usuarios")
-            .document(usuarioID)
-
-        documentReference.set(usuarios).addOnSuccessListener {
-            Log.d("db","Sucesso ao salvar os dados")
-        }.addOnFailureListener {
-            Log.d("db_error", "Erro ao salvar os dados")
-        }
+        val brithDate = binding.inputEditBirthdate.text.toString()
+        userID = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+        registerViewModel.saveUserData(nome,brithDate, userID)
     }
-
     companion object {
         const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
     }

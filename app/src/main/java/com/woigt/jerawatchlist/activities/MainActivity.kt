@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
         rv_profile.layoutManager = LinearLayoutManager(this)
         rv_profile.adapter = profileAdapter
     }

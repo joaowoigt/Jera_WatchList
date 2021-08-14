@@ -14,10 +14,9 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.woigt.jerawatchlist.activities.MainActivity
+import com.woigt.jerawatchlist.viewmodels.RegisterViewModel
 import com.woigt.jerawatchlist.databinding.ActivityLoginBinding
 
 /**
@@ -29,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var callbackManager : CallbackManager
     private lateinit var auth: FirebaseAuth
+    private val registerViewModel : RegisterViewModel = RegisterViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("infos", "signInWithCredential:success")
                     val user = auth.currentUser
                     if (user != null) {
-                        saveUserData(user)
+                        registerViewModel.saveUserData(user)
                         toMainActivity()
                     }
 
@@ -124,27 +124,6 @@ class LoginActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-    /**
-     * Save the user on the FireStore Database
-     */
-    private fun saveUserData(user: FirebaseUser) {
-        val db = FirebaseFirestore.getInstance()
-
-        val usuarios: HashMap<String, String> = HashMap()
-        usuarios["nome"] = user.displayName.toString()
-
-
-        val documentReference: DocumentReference = db.collection("Usuarios")
-            .document(user.uid)
-
-        documentReference.set(usuarios).addOnSuccessListener {
-            Log.d("db","Sucesso ao salvar os dados")
-        }.addOnFailureListener {
-            Log.d("db_error", "Erro ao salvar os dados")
-
-        }
     }
 
     private fun authenticateUser() {
