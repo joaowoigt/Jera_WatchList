@@ -10,6 +10,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.woigt.jerawatchlist.databinding.ActivityNewPerfilBinding
 import com.woigt.jerawatchlist.model.Profile
 
+/**
+ * Activity for registration of a new Profile on the FireStore Database
+ * User need to enter a name
+ */
+
 class NewProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewPerfilBinding
@@ -24,6 +29,9 @@ class NewProfileActivity : AppCompatActivity() {
     }
 
     private fun insertListeners() {
+        /**
+         * Register the new Profile
+         */
         binding.btNewProfile.setOnClickListener {
             val name = binding.edtNewProfile.text.toString()
 
@@ -36,7 +44,9 @@ class NewProfileActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Function to register the new Profile
+     */
     private fun registerProfile() {
         val name = binding.edtNewProfile.text.toString()
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()

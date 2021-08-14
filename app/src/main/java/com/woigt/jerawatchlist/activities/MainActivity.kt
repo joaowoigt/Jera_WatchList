@@ -11,21 +11,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.woigt.jerawatchlist.activities.movies.MovieActivity
-import com.woigt.jerawatchlist.activities.perfil.PerfilAdapter
+import com.woigt.jerawatchlist.activities.perfil.ProfileAdapter
 import com.woigt.jerawatchlist.activities.register.LoginActivity
 import com.woigt.jerawatchlist.activities.register.NewProfileActivity
 import com.woigt.jerawatchlist.databinding.ActivityMainBinding
-import com.woigt.jerawatchlist.model.Movie
 import com.woigt.jerawatchlist.model.Profile
 import kotlinx.android.synthetic.main.activity_main.*
 
+/**
+ * Main Activity for the watchlistapp
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var userID: String
 
-    private var profileAdapter: PerfilAdapter? = null
+    private var profileAdapter: ProfileAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         val options = FirestoreRecyclerOptions.Builder<Profile>()
             .setQuery(query, Profile::class.java).build()
 
-        profileAdapter = PerfilAdapter(options) {
+        profileAdapter = ProfileAdapter(options) {
             val intent = Intent(this, MovieActivity::class.java)
             intent.putExtra("perfilName", it.name)
             startActivity(intent)
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         binding.btProfileRegister.setOnClickListener {
                             Toast.makeText(
-                                this, "Numero maximo de perfis atingdo",
+                                this, "Numero maximo de perfis atingido",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -101,8 +103,6 @@ class MainActivity : AppCompatActivity() {
                 }
         }
     }
-
-
 
     private fun bindUserData() {
         val email = FirebaseAuth.getInstance().currentUser?.email
@@ -118,5 +118,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-

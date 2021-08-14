@@ -20,7 +20,10 @@ import com.google.firebase.ktx.Firebase
 import com.woigt.jerawatchlist.activities.MainActivity
 import com.woigt.jerawatchlist.databinding.ActivityLoginBinding
 
-
+/**
+ * Activity to login an already existing user or to enter with Facebook.
+ * Users need to enter a valid email and password.
+ */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
@@ -39,6 +42,9 @@ class LoginActivity : AppCompatActivity() {
         insertListeners()
     }
 
+    /**
+     * Move the user to the Main Activity if already logged previously
+     */
     override fun onStart() {
         super.onStart()
         val usuarioAtual: FirebaseUser? = auth.currentUser
@@ -53,11 +59,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun insertListeners() {
+        /**
+         * Start the SingUp Activity
+         */
         binding.btCadastar.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
 
+        /**
+         * Login in the app
+         */
         binding.btLogin.setOnClickListener {
             val email = binding.edtLoginEmail.text.toString()
             val senha =  binding.edtLoginSenha.text.toString()
@@ -69,7 +81,9 @@ class LoginActivity : AppCompatActivity() {
                 authenticateUser()
             }
         }
-
+        /**
+         * Login with Facebook
+         */
         val loginButton = binding.loginFacebook
         loginButton.setReadPermissions("public_profile", "email")
 
@@ -77,20 +91,16 @@ class LoginActivity : AppCompatActivity() {
             override fun onSuccess(result: LoginResult) {
                 d("infos", "Success Login")
                 handleFacebookAccessToken(result.accessToken)
-
             }
-
             override fun onCancel() {
                 Toast.makeText(this@LoginActivity, "Login Cancelled", Toast.LENGTH_LONG)
                     .show()
             }
-
             override fun onError(error: FacebookException?) {
                 Toast.makeText(this@LoginActivity, error?.message, Toast.LENGTH_LONG)
                     .show()
             }
         })
-
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
@@ -116,6 +126,9 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Save the user on the FireStore Database
+     */
     private fun saveUserData(user: FirebaseUser) {
         val db = FirebaseFirestore.getInstance()
 

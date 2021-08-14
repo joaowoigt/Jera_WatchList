@@ -5,7 +5,6 @@
     <string name="password">Senha</string>
     <string name="birthdate">Data de Nascimento</string>
     <string name="signup">Cadastrar</string>
-    <string name="enter">Entrar</string>
     <string name="logout">Deslogar</string>
     <string name="new_profile">criar novo perfil</string>
     <string name="back">Voltar</string>

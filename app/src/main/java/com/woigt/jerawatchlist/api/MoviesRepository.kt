@@ -7,6 +7,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Repository to the TMDB api
+ *
+ * Single entry point for managing Api's response
+ */
 object MoviesRepository {
 
     private val api: Api

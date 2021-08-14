@@ -13,7 +13,9 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.woigt.jerawatchlist.R
 import com.woigt.jerawatchlist.model.Movie
 
-
+/**
+ *  Adapter for the Watchlist on the MovieActivity
+ */
 class WatchListAdapter(options: FirestoreRecyclerOptions<Movie>,
                         val onItemCliked: (Movie) -> Unit) :
     FirestoreRecyclerAdapter<Movie, WatchListAdapter.WatchlistMovieViewHolder>(options){

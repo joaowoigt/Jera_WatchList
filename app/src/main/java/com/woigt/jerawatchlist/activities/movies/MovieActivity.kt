@@ -16,7 +16,9 @@ import com.woigt.jerawatchlist.api.MoviesRepository
 import com.woigt.jerawatchlist.model.Movie
 import kotlinx.android.synthetic.main.activity_movie.*
 import java.net.URLEncoder
-
+/**
+ * Movie Activity with Watchlist, Watched List, popular movie list, search option, discover list,
+ */
 class MovieActivity : AppCompatActivity() {
 
     private lateinit var userId: String
@@ -69,23 +71,32 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun insertListeners() {
+        /**
+         * Search for movies with the inserted term
+         */
         bt_search.setOnClickListener {
             val termo = edt_search.text.toString()
             val termoEncoded = URLEncoder.encode(termo,"utf-8")
             searchMovies(termoEncoded)
         }
-
+        /**
+         * Return to the main Activity
+         */
         bt_back.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             finish()
             startActivity(intent)
         }
-
+        /**
+         * Refresh the discover Adapter
+         */
         bt_refresh_discover.setOnClickListener {
             getDiscoverByGenre("watchlist")
             getDiscoverByGenre("watchedlist")
         }
-
+        /**
+         * Delete the logged Profile
+         */
         bt_delete_profile.setOnClickListener {
             finish()
             documentReference.delete()
@@ -104,6 +115,21 @@ class MovieActivity : AppCompatActivity() {
         watchedListAdapter!!.stopListening()
     }
 
+    /**
+     * Set Recyler views
+     */
+    private fun setPopularMoviesRecyclerView() {
+        popularMovies = findViewById(R.id.rv_popular_movies)
+        popularMoviesLayoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
+        popularMovies.layoutManager = popularMoviesLayoutManager
+
+        popularMoviesAdapter = ApiAdapter(mutableListOf()){ movie -> addWatchList(movie)}
+        popularMovies.adapter = popularMoviesAdapter
+    }
+
     private fun setWatchListRecyclerView() {
         val query  = documentReference.collection("watchlist")
 
@@ -118,43 +144,6 @@ class MovieActivity : AppCompatActivity() {
             false)
         rv_watchlist.adapter = watchListAdapter
     }
-
-    private fun setPopularMoviesRecyclerView() {
-        popularMovies = findViewById(R.id.rv_popular_movies)
-        popularMoviesLayoutManager = LinearLayoutManager(
-            this,
-            LinearLayoutManager.HORIZONTAL,
-            false)
-        popularMovies.layoutManager = popularMoviesLayoutManager
-
-        popularMoviesAdapter = ApiAdapter(mutableListOf()){ movie -> addWatchList(movie)}
-        popularMovies.adapter = popularMoviesAdapter
-    }
-
-    private fun setSearchMoviesRecyclerView() {
-        searchMovies = findViewById(R.id.rv_search)
-        searchMoviesLayoutManager =  LinearLayoutManager(
-            this,
-            LinearLayoutManager.HORIZONTAL,
-            false)
-        searchMovies.layoutManager = searchMoviesLayoutManager
-
-        searchMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
-        searchMovies.adapter = searchMoviesAdapter
-    }
-
-    private fun setDiscoverMoviesRecyclerView() {
-        discoverMovies = findViewById(R.id.rv_discover)
-        discoverMoviesLayoutManager =  LinearLayoutManager(
-            this,
-            LinearLayoutManager.HORIZONTAL,
-            false)
-        discoverMovies.layoutManager = discoverMoviesLayoutManager
-
-        discoverMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
-        discoverMovies.adapter = discoverMoviesAdapter
-    }
-
 
     private fun setWatchedListRecyclerView() {
         val query = documentReference.collection("watchedlist")
@@ -171,10 +160,46 @@ class MovieActivity : AppCompatActivity() {
         rv_watched.adapter = watchedListAdapter
     }
 
+    private fun setDiscoverMoviesRecyclerView() {
+        discoverMovies = findViewById(R.id.rv_discover)
+        discoverMoviesLayoutManager =  LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
+        discoverMovies.layoutManager = discoverMoviesLayoutManager
+
+        discoverMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
+        discoverMovies.adapter = discoverMoviesAdapter
+    }
+
+    private fun setSearchMoviesRecyclerView() {
+        searchMovies = findViewById(R.id.rv_search)
+        searchMoviesLayoutManager =  LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
+        searchMovies.layoutManager = searchMoviesLayoutManager
+
+        searchMoviesAdapter = ApiAdapter(mutableListOf()) { movie -> addWatchList(movie)}
+        searchMovies.adapter = searchMoviesAdapter
+    }
+
+    /**
+     * API's response functions
+     */
     private fun getPopularMovies() {
         MoviesRepository.getPopularMovies(
             popularMoviesPage,
             ::onPopularMoviesFetched,
+            ::onError
+        )
+    }
+
+    private fun getDiscoverMovies(allmovies: String = "") {
+        MoviesRepository.discoverMovie(
+            allmovies,
+            discoverMoviePage,
+            ::onDiscoverMoviesFetched,
             ::onError
         )
     }
@@ -188,13 +213,23 @@ class MovieActivity : AppCompatActivity() {
         )
     }
 
-    private fun getDiscoverMovies(allmovies: String = "") {
-        MoviesRepository.discoverMovie(
-            allmovies,
-            discoverMoviePage,
-            ::onDiscoverMoviesFetched,
-            ::onError
-        )
+    /**
+     * Functions for the Api's recyler views refresh
+     */
+    private fun attachPopularMoviesOnScrollListener() {
+        popularMovies.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = popularMoviesLayoutManager.itemCount
+                val visibleItemCount = popularMoviesLayoutManager.childCount
+                val firstVisibleItem = popularMoviesLayoutManager.findFirstVisibleItemPosition()
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount /2) {
+                    popularMovies.removeOnScrollListener(this)
+                    popularMoviesPage++
+                    getPopularMovies()
+                }
+            }
+        })
     }
 
     private fun attachDiscoverMoviesOnScrollListener() {
@@ -229,24 +264,9 @@ class MovieActivity : AppCompatActivity() {
             }
         })
     }
-
-    private fun attachPopularMoviesOnScrollListener() {
-        popularMovies.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val totalItemCount = popularMoviesLayoutManager.itemCount
-                val visibleItemCount = popularMoviesLayoutManager.childCount
-                val firstVisibleItem = popularMoviesLayoutManager.findFirstVisibleItemPosition()
-
-                if (firstVisibleItem + visibleItemCount >= totalItemCount /2) {
-                    popularMovies.removeOnScrollListener(this)
-                    popularMoviesPage++
-                    getPopularMovies()
-                }
-            }
-        })
-    }
-
-
+    /**
+     * Functions for the Api's recyler views refresh
+     */
     private fun onDiscoverMoviesFetched(movies: List<Movie>) {
         discoverMoviesAdapter.appendMovies(movies)
         attachDiscoverMoviesOnScrollListener()
@@ -262,11 +282,17 @@ class MovieActivity : AppCompatActivity() {
         attachPopularMoviesOnScrollListener()
     }
 
+    /**
+     * Response if the API doesn't work
+     */
     private fun onError() {
         Toast.makeText(this, "Please Check your internet connection",
             Toast.LENGTH_LONG).show()
     }
 
+    /**
+     * Add the clicked movie to the Watchlist on the FireStore
+     */
     private fun addWatchList(movie: Movie) {
             documentReference.collection("watchlist")
                 .document(movie.title + "WatchList")
@@ -274,6 +300,9 @@ class MovieActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Remove the clicked movie from the Watchlist and add to the WatchedList on the Firestore
+     */
     private fun removeAndAddToWatchedList(movie: Movie) {
         documentReference.collection("watchlist")
             .document(movie.title + "WatchList").delete()
@@ -283,6 +312,9 @@ class MovieActivity : AppCompatActivity() {
             .set(movie)
     }
 
+    /**
+     * Delete the clicked movie from the WatcheList
+     */
     private fun deleteMovie(movie: Movie) {
         documentReference.collection("watchedlist")
             .document(movie.title + "WatchedList")
@@ -290,6 +322,11 @@ class MovieActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Get the most commom genre on the @param
+     * @param path path to the collection (watchlist or watchedlist)
+     * @return the API response with the genres_id
+     */
     private fun getDiscoverByGenre(path: String) {
        documentReference.collection(path)
            .get().addOnSuccessListener { QuerySnapshot ->

@@ -10,7 +10,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.woigt.jerawatchlist.R
 import com.woigt.jerawatchlist.model.Movie
-
+/**
+ *  Adapter for the APi responses on the MovieActivity
+ */
 class ApiAdapter(
     private var movies: MutableList<Movie>,
     private val onMovieClick: (movie: Movie) -> Unit
@@ -52,6 +54,5 @@ class ApiAdapter(
 
             action.setOnClickListener { onMovieClick.invoke(movie) }
         }
-
     }
 }

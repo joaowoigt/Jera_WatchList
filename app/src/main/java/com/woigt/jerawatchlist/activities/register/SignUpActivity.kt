@@ -14,6 +14,10 @@ import com.woigt.jerawatchlist.utils.text
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * Activity to register a new user on the Firestore Database and FireStore Authentication.
+ * Users need to enter a username, password, valid email anda birthdate.
+ */
 class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
@@ -25,11 +29,13 @@ class SignUpActivity : AppCompatActivity() {
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         insertListeners()
     }
 
     private fun insertListeners() {
+        /**
+         * Register the new user
+         */
         binding.btRegisterSignup.setOnClickListener {
             val usuario = binding.inputEditUser.text.toString()
             val senha = binding.inputEditPassword.text.toString()
@@ -45,6 +51,9 @@ class SignUpActivity : AppCompatActivity() {
 
             }
         }
+        /**
+         * Date picker based on material design
+         */
         binding.inputBirthdate.editText?.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker().build()
 
@@ -56,7 +65,9 @@ class SignUpActivity : AppCompatActivity() {
             datePicker.show(supportFragmentManager, DATE_PICKER_TAG)
         }
     }
-
+    /**
+     * Function to register the user on the Firebase Authentication
+     */
     private fun cadastraUsuario() {
         val senha = binding.inputEditPassword.text.toString()
         val email = binding.inputEditEmail.text.toString()
@@ -65,20 +76,15 @@ class SignUpActivity : AppCompatActivity() {
             .addOnCompleteListener {
 
                 if (it.isSuccessful) {
-
                     salvarDadosUsuario()
-
                     Toast.makeText(this, "Cadastrado com sucesso", Toast.LENGTH_LONG)
                         .show()
                 } else {
                     val erro: String
-
                     try {
                         throw it.exception!!
-
                         } catch(e: FirebaseAuthWeakPasswordException) {
                             erro = "Digite uma senha com no mínimo 6 caracteres"
-
                         }catch (e: FirebaseAuthUserCollisionException) {
                         erro = "Este email ja foi cadastrado"
                     } catch (e: FirebaseAuthInvalidCredentialsException) {
@@ -86,18 +92,18 @@ class SignUpActivity : AppCompatActivity() {
                     } catch (e: Exception) {
                         erro = "Erro ao cadastrar o usuário"
                     }
-
                    Toast.makeText(this, erro, Toast.LENGTH_LONG).show()
                 }
             }
     }
-
+    /**
+     * Function to save the user data on the Firestore Database
+     */
     private fun salvarDadosUsuario() {
         val nome = binding.inputEditUser.text.toString()
         val dataNascimento = binding.inputEditBirthdate.text.toString()
 
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
 
         val usuarios: HashMap<String, String> = HashMap()
         usuarios["nome"] = nome
